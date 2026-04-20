@@ -24,8 +24,8 @@ export default function App() {
   if (!data.username) {
     return (
       <Welcome
-        onComplete={name => {
-          const fresh = { username: name, periods: [], dayLogs: {} }
+        onComplete={({ name, preferences, periods }) => {
+          const fresh = { username: name, preferences, periods, dayLogs: {} }
           saveData(fresh)
           setData(fresh)
         }}

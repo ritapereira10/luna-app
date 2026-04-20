@@ -42,15 +42,15 @@ function CycleRow({ cycle, index }) {
 }
 
 export default function Stats({ data }) {
-  const { periods = [] } = data
+  const { periods = [], preferences = {} } = data
   const hasCycles = periods.length >= 2
   const hasPeriods = periods.length >= 1
 
-  const avgCycle = getAverageCycleLength(periods)
-  const avgPeriod = getAveragePeriodLength(periods)
+  const avgCycle = getAverageCycleLength(periods, preferences)
+  const avgPeriod = getAveragePeriodLength(periods, preferences)
   const variation = getCycleVariation(periods)
   const lastCycles = getLastNCycles(periods, 6)
-  const prediction = predictNextPeriod(periods)
+  const prediction = predictNextPeriod(periods, preferences)
 
   return (
     <div className="flex-1 overflow-y-auto pb-24">

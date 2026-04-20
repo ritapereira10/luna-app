@@ -58,13 +58,13 @@ function rollingAvg(arr, n = 6) {
   return Math.round(recent.reduce((a, b) => a + b, 0) / recent.length)
 }
 
-export function getAverageCycleLength(periods) {
-  return rollingAvg(getCycleLengths(periods)) ?? 28
+export function getAverageCycleLength(periods, preferences = {}) {
+  return rollingAvg(getCycleLengths(periods)) ?? preferences.typicalCycleLength ?? 28
 }
 
-export function getAveragePeriodLength(periods) {
+export function getAveragePeriodLength(periods, preferences = {}) {
   const lengths = periods.filter(p => p.endDate).map(getPeriodLength).filter(Boolean)
-  return rollingAvg(lengths) ?? 5
+  return rollingAvg(lengths) ?? preferences.typicalPeriodLength ?? 5
 }
 
 export function getCycleVariation(periods) {
@@ -76,12 +76,12 @@ export function getCycleVariation(periods) {
   return Math.round(Math.sqrt(variance))
 }
 
-export function predictNextPeriod(periods) {
+export function predictNextPeriod(periods, preferences = {}) {
   const sorted = getSortedPeriods(periods)
   if (!sorted.length) return null
   const last = sorted[sorted.length - 1]
-  const avgCycle = getAverageCycleLength(periods)
-  const avgPeriod = getAveragePeriodLength(periods)
+  const avgCycle = getAverageCycleLength(periods, preferences)
+  const avgPeriod = getAveragePeriodLength(periods, preferences)
   const startDate = addDays(last.startDate, avgCycle)
   return {
     startDate,
@@ -91,8 +91,8 @@ export function predictNextPeriod(periods) {
   }
 }
 
-export function getFertileWindow(periods) {
-  const prediction = predictNextPeriod(periods)
+export function getFertileWindow(periods, preferences = {}) {
+  const prediction = predictNextPeriod(periods, preferences)
   if (!prediction) return null
   const ovulation = addDays(prediction.startDate, -14)
   return {
@@ -109,14 +109,14 @@ export function isDayInPeriod(dateStr, periods) {
   })
 }
 
-export function isDayPredicted(dateStr, periods) {
-  const pred = predictNextPeriod(periods)
+export function isDayPredicted(dateStr, periods, preferences = {}) {
+  const pred = predictNextPeriod(periods, preferences)
   if (!pred) return false
   return dateStr >= pred.startDate && dateStr <= pred.endDate
 }
 
-export function isDayFertile(dateStr, periods) {
-  const fw = getFertileWindow(periods)
+export function isDayFertile(dateStr, periods, preferences = {}) {
+  const fw = getFertileWindow(periods, preferences)
   if (!fw) return false
   return dateStr >= fw.start && dateStr <= fw.end
 }

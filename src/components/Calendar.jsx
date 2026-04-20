@@ -24,17 +24,16 @@ function getCalendarGrid(year, month) {
   return cells
 }
 
-function CalendarDay({ day, month, year, periods, dayLogs, todayStr, onSelect }) {
+function CalendarDay({ day, month, year, periods, preferences, dayLogs, todayStr, onSelect }) {
   if (!day) return <div />
 
   const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-  const isPast = dateStr <= todayStr
   const isToday = dateStr === todayStr
   const isFuture = dateStr > todayStr
 
   const inPeriod = isDayInPeriod(dateStr, periods)
-  const predicted = !inPeriod && isDayPredicted(dateStr, periods)
-  const fertile = !inPeriod && !predicted && isDayFertile(dateStr, periods)
+  const predicted = !inPeriod && isDayPredicted(dateStr, periods, preferences)
+  const fertile = !inPeriod && !predicted && isDayFertile(dateStr, periods, preferences)
   const hasLog = !!dayLogs[dateStr]
 
   let bg = ''
@@ -69,15 +68,15 @@ function CalendarDay({ day, month, year, periods, dayLogs, todayStr, onSelect })
 }
 
 export default function Calendar({ data, currentMonth, onMonthChange, onDaySelect }) {
-  const { periods = [], dayLogs = {} } = data
+  const { periods = [], dayLogs = {}, preferences = {} } = data
   const year = currentMonth.getFullYear()
   const month = currentMonth.getMonth()
   const todayStr = today()
 
   const grid = useMemo(() => getCalendarGrid(year, month), [year, month])
 
-  const prediction = useMemo(() => predictNextPeriod(periods), [periods])
-  const fertileWindow = useMemo(() => getFertileWindow(periods), [periods])
+  const prediction = useMemo(() => predictNextPeriod(periods, preferences), [periods, preferences])
+  const fertileWindow = useMemo(() => getFertileWindow(periods, preferences), [periods, preferences])
 
   function prevMonth() {
     onMonthChange(new Date(year, month - 1, 1))
@@ -143,6 +142,7 @@ export default function Calendar({ data, currentMonth, onMonthChange, onDaySelec
             month={month}
             year={year}
             periods={periods}
+            preferences={preferences}
             dayLogs={dayLogs}
             todayStr={todayStr}
             onSelect={onDaySelect}

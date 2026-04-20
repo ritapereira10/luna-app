@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    background-color: #FAF7F4;
+  }
+
+  body {
+    @apply bg-luna-cream text-luna-dark font-sans;
+    overscroll-behavior: none;
+  }
+
+  input, textarea, select {
+    @apply outline-none;
+    font-size: 16px; /* prevent iOS zoom */
+  }
+}
+
+@layer utilities {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
